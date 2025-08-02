@@ -1,0 +1,38 @@
+ECOSPATIAL LIMITED SOLUTIONS - SIMPLE WEBSITE
+==============================================
+
+QUICK START FOR WINDOWS:
+1. Double-click "run-website.bat" 
+   OR
+2. Double-click "ecospatial-compact.html"
+
+Both will open the website in your default browser.
+
+WHAT'S INCLUDED:
+- ecospatial-compact.html: Complete website in a single file
+- run-website.bat: Windows batch file for easy launching
+- WINDOWS-INSTRUCTIONS.txt: This instruction file
+
+FEATURES:
+✓ Fully responsive design (works on desktop, tablet, mobile)
+✓ Professional layout with navigation, services, about, contact
+✓ Smooth scrolling and animations
+✓ Contact form (shows confirmation message)
+✓ No internet connection required
+✓ No installation needed
+
+TECHNICAL DETAILS:
+- Self-contained HTML file with embedded CSS and JavaScript
+- Uses modern web standards and responsive design
+- Replaced Font Awesome icons with emoji icons
+- Works on any modern browser (Chrome, Firefox, Edge, Safari)
+- File size: ~15KB (very lightweight)
+
+CUSTOMIZATION:
+To modify content, open "ecospatial-compact.html" in any text editor:
+- Update contact information
+- Change colors by modifying CSS variables at the top
+- Add/remove services
+- Update company information
+
+No technical expertise required for basic text changes!
