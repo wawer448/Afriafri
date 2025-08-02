@@ -290,7 +290,9 @@
                 <div class="action-buttons">
                     <button type="button" class="btn" onclick="updatePreview()">🔄 Refresh Preview</button>
                     <button type="button" class="btn btn-success" onclick="saveChanges()">💾 Save Changes</button>
-                    <button type="button" class="btn btn-secondary" onclick="downloadHTML()">📥 Download HTML</button>
+                    <button type="button" class="btn btn-secondary" onclick="downloadHTML()">📥 Download Updated File</button>
+                    <button type="button" class="btn" onclick="updateMainFile()">🚀 Update Main File</button>
+                    <button type="button" class="btn btn-secondary" onclick="loadFromFile()">📂 Load from File</button>
                     <button type="button" class="btn btn-secondary" onclick="resetForm()">🔄 Reset All</button>
                 </div>
                 
@@ -298,6 +300,19 @@
                     <strong>💡 Real-time Preview:</strong> Changes appear automatically as you type (300ms delay). 
                     Use "Refresh Preview" if updates seem stuck.
                 </div>
+                
+                <div style="margin-top: 1rem; padding: 1rem; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 5px; font-size: 0.9rem;">
+                    <strong>🚀 Update Main File:</strong> 
+                    <ol style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                        <li>Click "Update Main File" to generate updated version</li>
+                        <li>Download will save as "ecospatial-compact.html"</li>
+                        <li>Replace your original file with the downloaded one</li>
+                        <li>Your website is now updated!</li>
+                    </ol>
+                </div>
+                
+                <!-- File Input for Loading -->
+                <input type="file" id="fileInput" accept=".html" style="display: none;" onchange="handleFileLoad(event)">
             </form>
         </div>
 
@@ -623,6 +638,115 @@
                 console.error('Download error:', error);
                 showStatus('Error downloading HTML: ' + error.message, 'error');
             }
+        }
+
+        function updateMainFile() {
+            try {
+                const data = gatherFormData();
+                const htmlContent = generateHTMLContent(data);
+                
+                const blob = new Blob([htmlContent], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'ecospatial-compact.html'; // Same name as original
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showStatus('Updated main file ready for download! Replace your original file with this one.', 'success');
+                console.log('Main file update generated');
+            } catch (error) {
+                console.error('Main file update error:', error);
+                showStatus('Error creating main file update: ' + error.message, 'error');
+            }
+        }
+
+        function loadFromFile() {
+            document.getElementById('fileInput').click();
+        }
+
+        function handleFileLoad(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (!file.name.endsWith('.html')) {
+                showStatus('Please select an HTML file', 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const htmlContent = e.target.result;
+                    parseHTMLContent(htmlContent);
+                    showStatus('File loaded successfully! Content has been populated in the form.', 'success');
+                } catch (error) {
+                    console.error('File parse error:', error);
+                    showStatus('Error parsing file: ' + error.message, 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function parseHTMLContent(htmlContent) {
+            // Create a temporary DOM parser
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlContent, 'text/html');
+            
+            // Extract content from the HTML
+            const title = doc.querySelector('title')?.textContent || '';
+            const heroH2 = doc.querySelector('.hero-content h2')?.textContent || '';
+            const heroP = doc.querySelector('.hero-content p')?.textContent || '';
+            
+            // Extract company name from title or hero
+            const companyName = title.split(' - ')[0] || 'Ecospatial Limited Solutions';
+            
+            // Extract about paragraphs
+            const aboutParagraphs = doc.querySelectorAll('.about-text p');
+            const aboutText1 = aboutParagraphs[0]?.textContent || '';
+            const aboutText2 = aboutParagraphs[1]?.textContent || '';
+            
+            // Extract contact info
+            const infoItems = doc.querySelectorAll('.info-item p');
+            const location = infoItems[0]?.textContent || '';
+            const phone = infoItems[1]?.textContent || '';
+            const email = infoItems[2]?.textContent || '';
+            const hours = infoItems[3]?.textContent || '';
+            
+            // Extract services
+            const serviceCards = doc.querySelectorAll('.service-card');
+            const services = [];
+            serviceCards.forEach(card => {
+                const title = card.querySelector('h3')?.textContent || '';
+                const desc = card.querySelector('p')?.textContent || '';
+                services.push({ title, desc });
+            });
+            
+            // Populate form fields
+            document.getElementById('companyName').value = companyName;
+            document.getElementById('tagline').value = heroH2;
+            document.getElementById('subtitle').value = heroP;
+            document.getElementById('aboutText1').value = aboutText1;
+            document.getElementById('aboutText2').value = aboutText2;
+            document.getElementById('location').value = location;
+            document.getElementById('phone').value = phone;
+            document.getElementById('email').value = email;
+            document.getElementById('hours').value = hours;
+            
+            // Populate services (up to 5)
+            for (let i = 0; i < Math.min(services.length, 5); i++) {
+                const serviceNum = i + 1;
+                document.getElementById(`service${serviceNum}Title`).value = services[i].title;
+                document.getElementById(`service${serviceNum}Desc`).value = services[i].desc;
+            }
+            
+            // Update preview
+            updatePreview();
+            
+            console.log('HTML content parsed and form populated');
         }
 
         function resetForm() {

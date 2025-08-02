@@ -11,6 +11,8 @@ FEATURES:
 ✅ Edit all website content (text, services, contact info)
 ✅ Auto-save to browser storage
 ✅ Download updated HTML file
+✅ Load existing HTML files for editing
+✅ Generate main file replacements
 ✅ Reset to original content
 
 HOW TO USE:
@@ -26,10 +28,24 @@ HOW TO USE:
 5. Click "Download HTML" to get updated website file
 6. Use "Reset" to restore original content
 
-WORKFLOW:
+WORKFLOWS:
+
+BASIC WORKFLOW:
 1. Edit content → Preview → Save → Download
 2. Replace your original HTML file with the downloaded one
 3. Your website is now updated!
+
+MAIN FILE UPDATE WORKFLOW:
+1. Edit content in the CMS
+2. Click "Update Main File" 
+3. Downloads "ecospatial-compact.html" (same name as original)
+4. Replace your original file - changes are now live!
+
+LOAD EXISTING FILE:
+1. Click "Load from File"
+2. Select your current HTML file
+3. CMS automatically populates with existing content
+4. Make changes and update
 
 TECHNICAL NOTES:
 - Changes are saved in browser's local storage
