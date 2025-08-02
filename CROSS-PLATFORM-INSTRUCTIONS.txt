@@ -1,0 +1,23 @@
+ECOSPATIAL LIMITED SOLUTIONS - WEBSITE LAUNCHER
+===============================================
+
+FOR WINDOWS:
+1. Double-click "start-website.bat" 
+2. Double-click "run-website.bat"
+3. Double-click "ecospatial-compact.html" directly
+
+FOR MAC/LINUX:
+1. Open Terminal in this folder
+2. Run: ./run-website.sh
+3. Or double-click "ecospatial-compact.html" 
+
+TROUBLESHOOTING:
+- If batch files don't work on Windows, try right-clicking the HTML file and "Open with" your browser
+- On Mac/Linux, you can also run: open ecospatial-compact.html (Mac) or xdg-open ecospatial-compact.html (Linux)
+- The HTML file is completely self-contained and will work in any modern browser
+
+FILE SIZES:
+- ecospatial-compact.html: ~23KB (complete website)
+- All other files are just launchers
+
+The website works completely offline - no internet required!
