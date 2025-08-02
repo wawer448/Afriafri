@@ -1,0 +1,44 @@
+ECOSPATIAL CMS - CONTENT MANAGEMENT SYSTEM
+==========================================
+
+QUICK START:
+1. Double-click "cms.html" to open the CMS
+2. Or use "run-cms.bat" (Windows) or "./run-cms.sh" (Mac/Linux)
+
+FEATURES:
+✅ Easy-to-use web interface
+✅ Live preview of changes
+✅ Edit all website content (text, services, contact info)
+✅ Auto-save to browser storage
+✅ Download updated HTML file
+✅ Reset to original content
+
+HOW TO USE:
+1. Open the CMS in your browser
+2. Edit content in the left panel:
+   - Company name and taglines
+   - About text paragraphs
+   - Contact information
+   - All 5 services (title + description)
+
+3. Click "Preview Changes" to see live preview on the right
+4. Click "Save Changes" to save to browser storage
+5. Click "Download HTML" to get updated website file
+6. Use "Reset" to restore original content
+
+WORKFLOW:
+1. Edit content → Preview → Save → Download
+2. Replace your original HTML file with the downloaded one
+3. Your website is now updated!
+
+TECHNICAL NOTES:
+- Changes are saved in browser's local storage
+- No server or internet connection required
+- Works completely offline
+- Generated HTML file is self-contained
+- Compatible with all modern browsers
+
+TROUBLESHOOTING:
+- If preview doesn't update, try refreshing the CMS page
+- Changes are saved per browser - use same browser to maintain edits
+- Downloaded file will be named "ecospatial-updated.html"

@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ecospatial CMS - Content Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .cms-header {
+            background: #2c7a7b;
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .cms-header h1 {
+            font-size: 1.8rem;
+        }
+
+        .cms-header p {
+            opacity: 0.9;
+            margin-top: 0.5rem;
+        }
+
+        .cms-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .cms-panel {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            height: fit-content;
+        }
+
+        .cms-panel h2 {
+            color: #2c7a7b;
+            margin-bottom: 1.5rem;
+            font-size: 1.4rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #444;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #2c7a7b;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .services-section {
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .services-section h4 {
+            color: #2c7a7b;
+            margin-bottom: 1rem;
+        }
+
+        .service-item {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .service-item input {
+            margin-bottom: 0.5rem;
+        }
+
+        .btn {
+            background: #2c7a7b;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background 0.3s ease;
+            margin-right: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .btn:hover {
+            background: #38b2ac;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .preview-frame {
+            width: 100%;
+            height: 600px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            background: white;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .status-message {
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .status-success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        @media (max-width: 768px) {
+            .cms-container {
+                grid-template-columns: 1fr;
+                padding: 0 1rem;
+            }
+            
+            .cms-header {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="cms-header">
+        <h1>🛠️ Ecospatial CMS</h1>
+        <p>Simple Content Management System - Edit your website content easily</p>
+    </header>
+
+    <div class="cms-container">
+        <!-- Edit Panel -->
+        <div class="cms-panel">
+            <h2>📝 Edit Content</h2>
+            
+            <div class="status-message" id="statusMessage"></div>
+
+            <form id="cmsForm">
+                <!-- Company Info -->
+                <div class="form-group">
+                    <label for="companyName">Company Name</label>
+                    <input type="text" id="companyName" value="Ecospatial Limited Solutions">
+                </div>
+
+                <div class="form-group">
+                    <label for="tagline">Hero Tagline</label>
+                    <input type="text" id="tagline" value="Professional Land Survey & Physical Planning Services">
+                </div>
+
+                <div class="form-group">
+                    <label for="subtitle">Hero Subtitle</label>
+                    <input type="text" id="subtitle" value="Your trusted partner in spatial solutions and land development">
+                </div>
+
+                <!-- About Section -->
+                <div class="form-group">
+                    <label for="aboutText1">About Text - Paragraph 1</label>
+                    <textarea id="aboutText1">Ecospatial Limited Solutions is a leading land survey and physical planning consultancy firm dedicated to providing innovative spatial solutions. With years of experience in the industry, we combine cutting-edge technology with professional expertise to deliver accurate and reliable services.</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="aboutText2">About Text - Paragraph 2</label>
+                    <textarea id="aboutText2">Our team of qualified surveyors and planners is committed to excellence, ensuring that every project meets the highest standards of quality and precision. We pride ourselves on our attention to detail and our ability to provide customized solutions that meet our clients' unique needs.</textarea>
+                </div>
+
+                <!-- Contact Info -->
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <input type="text" id="location" value="Nairobi, Kenya">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="text" id="phone" value="+254 722 804 316">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" value="pwaweru05@gmail.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="hours">Business Hours</label>
+                    <input type="text" id="hours" value="Mon - Fri: 8:00 AM - 5:00 PM">
+                </div>
+
+                <!-- Services Section -->
+                <div class="services-section">
+                    <h4>🛠️ Services</h4>
+                    
+                    <div class="service-item">
+                        <input type="text" id="service1Title" value="Land Surveying" placeholder="Service Title">
+                        <textarea id="service1Desc" placeholder="Service Description">Accurate topographical surveys, boundary surveys, and cadastral mapping using state-of-the-art equipment.</textarea>
+                    </div>
+
+                    <div class="service-item">
+                        <input type="text" id="service2Title" value="Physical Planning" placeholder="Service Title">
+                        <textarea id="service2Desc" placeholder="Service Description">Comprehensive urban and regional planning services for sustainable development projects.</textarea>
+                    </div>
+
+                    <div class="service-item">
+                        <input type="text" id="service3Title" value="GIS Mapping" placeholder="Service Title">
+                        <textarea id="service3Desc" placeholder="Service Description">Geographic Information System solutions for spatial data analysis and visualization.</textarea>
+                    </div>
+
+                    <div class="service-item">
+                        <input type="text" id="service4Title" value="Property Subdivision" placeholder="Service Title">
+                        <textarea id="service4Desc" placeholder="Service Description">Expert subdivision planning and approval processing for residential and commercial properties.</textarea>
+                    </div>
+
+                    <div class="service-item">
+                        <input type="text" id="service5Title" value="Land Documentation" placeholder="Service Title">
+                        <textarea id="service5Desc" placeholder="Service Description">Complete land documentation services including title deeds and land registration.</textarea>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button type="button" class="btn" onclick="updatePreview()">👀 Preview Changes</button>
+                    <button type="button" class="btn btn-success" onclick="saveChanges()">💾 Save Changes</button>
+                    <button type="button" class="btn btn-secondary" onclick="downloadHTML()">📥 Download HTML</button>
+                    <button type="button" class="btn btn-secondary" onclick="resetForm()">🔄 Reset</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Preview Panel -->
+        <div class="cms-panel">
+            <h2>👁️ Live Preview</h2>
+            <iframe id="previewFrame" class="preview-frame" src="ecospatial-compact.html"></iframe>
+        </div>
+    </div>
+
+    <script>
+        // Load saved data on page load
+        window.addEventListener('load', function() {
+            loadSavedData();
+            updatePreview();
+        });
+
+        function loadSavedData() {
+            const savedData = localStorage.getItem('ecospatialCMSData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                Object.keys(data).forEach(key => {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        element.value = data[key];
+                    }
+                });
+                showStatus('Loaded saved changes', 'success');
+            }
+        }
+
+        function saveChanges() {
+            const formData = gatherFormData();
+            localStorage.setItem('ecospatialCMSData', JSON.stringify(formData));
+            showStatus('Changes saved successfully!', 'success');
+        }
+
+        function gatherFormData() {
+            const fields = [
+                'companyName', 'tagline', 'subtitle', 'aboutText1', 'aboutText2',
+                'location', 'phone', 'email', 'hours',
+                'service1Title', 'service1Desc', 'service2Title', 'service2Desc',
+                'service3Title', 'service3Desc', 'service4Title', 'service4Desc',
+                'service5Title', 'service5Desc'
+            ];
+            
+            const data = {};
+            fields.forEach(field => {
+                const element = document.getElementById(field);
+                if (element) {
+                    data[field] = element.value;
+                }
+            });
+            return data;
+        }
+
+        function updatePreview() {
+            const data = gatherFormData();
+            generatePreviewHTML(data);
+            showStatus('Preview updated', 'success');
+        }
+
+        function generatePreviewHTML(data) {
+            const htmlTemplate = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${data.companyName} - Land Survey & Physical Planning</title>
+    <style>
+        /* Same CSS as the original compact file */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary-color: #2c7a7b;
+            --secondary-color: #38b2ac;
+            --accent-color: #4fd1c5;
+            --text-dark: #2d3748;
+            --text-light: #718096;
+            --bg-light: #f7fafc;
+            --white: #ffffff;
+            --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        header { background: var(--white); box-shadow: var(--shadow); position: fixed; top: 0; left: 0; right: 0; z-index: 1000; }
+        .navbar { padding: 1rem 0; }
+        .navbar .container { display: flex; justify-content: space-between; align-items: center; }
+        .nav-brand h1 { color: var(--primary-color); font-size: 1.8rem; font-weight: 700; }
+        .nav-menu { display: flex; list-style: none; gap: 2rem; }
+        .nav-menu a { text-decoration: none; color: var(--text-dark); font-weight: 500; transition: color 0.3s ease; }
+        .nav-menu a:hover { color: var(--primary-color); }
+        .hero {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: var(--white);
+            padding: 150px 0 100px;
+            text-align: center;
+            margin-top: 80px;
+        }
+        .hero-content h2 { font-size: 3rem; margin-bottom: 1rem; font-weight: 700; }
+        .hero-content p { font-size: 1.3rem; margin-bottom: 2rem; opacity: 0.9; }
+        .btn { display: inline-block; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: 600; transition: all 0.3s ease; }
+        .btn-primary { background: var(--white); color: var(--primary-color); }
+        .services { padding: 80px 0; background: var(--bg-light); }
+        .section-title { text-align: center; font-size: 2.5rem; margin-bottom: 3rem; color: var(--text-dark); }
+        .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+        .service-card { background: var(--white); padding: 2rem; border-radius: 10px; text-align: center; box-shadow: var(--shadow); }
+        .service-icon { font-size: 3rem; color: var(--primary-color); margin-bottom: 1rem; font-weight: bold; }
+        .service-card h3 { font-size: 1.5rem; margin-bottom: 1rem; color: var(--text-dark); }
+        .service-card p { color: var(--text-light); line-height: 1.8; }
+        .about { padding: 80px 0; background: var(--white); }
+        .about-content { max-width: 800px; margin: 0 auto; }
+        .about-text p { color: var(--text-light); font-size: 1.1rem; margin-bottom: 1.5rem; line-height: 1.8; }
+        .contact { padding: 80px 0; background: var(--bg-light); }
+        .contact-content { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; margin-top: 3rem; }
+        .contact-info h3 { font-size: 1.8rem; margin-bottom: 2rem; color: var(--text-dark); }
+        .info-item { display: flex; align-items: center; margin-bottom: 1.5rem; }
+        .info-icon { font-size: 1.2rem; color: var(--primary-color); width: 30px; font-weight: bold; }
+        .info-item p { color: var(--text-light); font-size: 1.1rem; }
+        footer { background: #2d3748; color: var(--white); padding: 40px 0; text-align: center; }
+        @media (max-width: 768px) {
+            .hero-content h2 { font-size: 2rem; }
+            .services-grid { grid-template-columns: 1fr; }
+            .contact-content { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="container">
+                <div class="nav-brand">
+                    <h1>${data.companyName}</h1>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h2>${data.tagline}</h2>
+            <p>${data.subtitle}</p>
+            <a href="#services" class="btn btn-primary">Explore Our Services</a>
+        </div>
+    </section>
+
+    <section id="services" class="services">
+        <div class="container">
+            <h2 class="section-title">Our Services</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">📍</div>
+                    <h3>${data.service1Title}</h3>
+                    <p>${data.service1Desc}</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🏙️</div>
+                    <h3>${data.service2Title}</h3>
+                    <p>${data.service2Desc}</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🌍</div>
+                    <h3>${data.service3Title}</h3>
+                    <p>${data.service3Desc}</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🏠</div>
+                    <h3>${data.service4Title}</h3>
+                    <p>${data.service4Desc}</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">📄</div>
+                    <h3>${data.service5Title}</h3>
+                    <p>${data.service5Desc}</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="about">
+        <div class="container">
+            <h2 class="section-title">About ${data.companyName}</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>${data.aboutText1}</p>
+                    <p>${data.aboutText2}</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="section-title">Get In Touch</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h3>Contact Information</h3>
+                    <div class="info-item">
+                        <span class="info-icon">📍</span>
+                        <p>${data.location}</p>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-icon">📞</span>
+                        <p>${data.phone}</p>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-icon">✉️</span>
+                        <p>${data.email}</p>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-icon">🕐</span>
+                        <p>${data.hours}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 ${data.companyName}. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>`;
+
+            // Update preview iframe
+            const iframe = document.getElementById('previewFrame');
+            const blob = new Blob([htmlTemplate], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            iframe.src = url;
+        }
+
+        function downloadHTML() {
+            const data = gatherFormData();
+            generatePreviewHTML(data);
+            
+            // Create download
+            const htmlContent = document.getElementById('previewFrame').contentDocument.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'ecospatial-updated.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showStatus('HTML file downloaded successfully!', 'success');
+        }
+
+        function resetForm() {
+            if (confirm('Are you sure you want to reset all changes?')) {
+                localStorage.removeItem('ecospatialCMSData');
+                location.reload();
+            }
+        }
+
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.textContent = message;
+            statusDiv.className = `status-message status-${type}`;
+            statusDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
