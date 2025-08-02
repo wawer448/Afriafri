@@ -288,10 +288,15 @@
                 </div>
 
                 <div class="action-buttons">
-                    <button type="button" class="btn" onclick="updatePreview()">👀 Preview Changes</button>
+                    <button type="button" class="btn" onclick="updatePreview()">🔄 Refresh Preview</button>
                     <button type="button" class="btn btn-success" onclick="saveChanges()">💾 Save Changes</button>
                     <button type="button" class="btn btn-secondary" onclick="downloadHTML()">📥 Download HTML</button>
-                    <button type="button" class="btn btn-secondary" onclick="resetForm()">🔄 Reset</button>
+                    <button type="button" class="btn btn-secondary" onclick="resetForm()">🔄 Reset All</button>
+                </div>
+                
+                <div style="margin-top: 1rem; padding: 1rem; background: #e8f5e8; border-radius: 5px; font-size: 0.9rem;">
+                    <strong>💡 Real-time Preview:</strong> Changes appear automatically as you type (300ms delay). 
+                    Use "Refresh Preview" if updates seem stuck.
                 </div>
             </form>
         </div>
@@ -299,7 +304,7 @@
         <!-- Preview Panel -->
         <div class="cms-panel">
             <h2>👁️ Live Preview</h2>
-            <iframe id="previewFrame" class="preview-frame" src="ecospatial-compact.html"></iframe>
+            <iframe id="previewFrame" class="preview-frame" src="about:blank"></iframe>
         </div>
     </div>
 
@@ -308,6 +313,7 @@
         window.addEventListener('load', function() {
             loadSavedData();
             updatePreview();
+            setupRealTimeUpdates();
         });
 
         function loadSavedData() {
@@ -349,10 +355,36 @@
             return data;
         }
 
+        let updateTimeout;
+        
+        function setupRealTimeUpdates() {
+            const fields = [
+                'companyName', 'tagline', 'subtitle', 'aboutText1', 'aboutText2',
+                'location', 'phone', 'email', 'hours',
+                'service1Title', 'service1Desc', 'service2Title', 'service2Desc',
+                'service3Title', 'service3Desc', 'service4Title', 'service4Desc',
+                'service5Title', 'service5Desc'
+            ];
+            
+            fields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    // Use debounced updates for better performance
+                    field.addEventListener('input', function() {
+                        clearTimeout(updateTimeout);
+                        updateTimeout = setTimeout(() => {
+                            updatePreview();
+                        }, 300); // 300ms delay
+                    });
+                }
+            });
+            
+            console.log('Real-time updates enabled for', fields.length, 'fields');
+        }
+
         function updatePreview() {
             const data = gatherFormData();
             generatePreviewHTML(data);
-            showStatus('Preview updated', 'success');
         }
 
         function generatePreviewHTML(data) {
@@ -532,9 +564,22 @@
 
             // Update preview iframe
             const iframe = document.getElementById('previewFrame');
-            const blob = new Blob([htmlTemplate], { type: 'text/html' });
-            const url = URL.createObjectURL(blob);
-            iframe.src = url;
+            
+            // Method 1: Try writing directly to iframe
+            try {
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                iframeDoc.open();
+                iframeDoc.write(htmlTemplate);
+                iframeDoc.close();
+            } catch (e) {
+                // Method 2: Fallback to blob URL
+                const blob = new Blob([htmlTemplate], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                iframe.src = url;
+                
+                // Clean up old blob URLs
+                setTimeout(() => URL.revokeObjectURL(url), 100);
+            }
         }
 
         function downloadHTML() {
