@@ -32,10 +32,49 @@
 
     <!-- Hero Section -->
     <section id="home" class="hero">
-        <div class="hero-content">
-            <h2>Professional Land Survey & Physical Planning Services</h2>
-            <p>Your trusted partner in spatial solutions and land development</p>
-            <a href="#services" class="btn btn-primary">Explore Our Services</a>
+        <div class="hero-carousel">
+            <div class="carousel-slide active" style="background-image: url('https://images.unsplash.com/photo-1489392191049-fc10c97e64b6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');">
+                <div class="carousel-overlay"></div>
+                <div class="hero-content">
+                    <h2>Secure Your Land Investment Today</h2>
+                    <p>Professional land surveying services to protect your property rights and maximize your investment value</p>
+                    <a href="#contact" class="btn btn-primary">Get Free Consultation</a>
+                </div>
+            </div>
+            <div class="carousel-slide" style="background-image: url('https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');">
+                <div class="carousel-overlay"></div>
+                <div class="hero-content">
+                    <h2>Fast & Accurate Title Deed Processing</h2>
+                    <p>Get your land documentation completed in record time with our expert surveying and legal support</p>
+                    <a href="#contact" class="btn btn-primary">Start Your Survey</a>
+                </div>
+            </div>
+            <div class="carousel-slide" style="background-image: url('https://images.unsplash.com/photo-1569163139394-de4798a9c2b6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');">
+                <div class="carousel-overlay"></div>
+                <div class="hero-content">
+                    <h2>Trusted by 500+ Property Owners</h2>
+                    <p>Join hundreds of satisfied clients who have secured their land investments with our certified survey services</p>
+                    <a href="#contact" class="btn btn-primary">Book Appointment</a>
+                </div>
+            </div>
+            <div class="carousel-slide" style="background-image: url('https://images.unsplash.com/photo-1611348524140-53c9914707fc?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');">
+                <div class="carousel-overlay"></div>
+                <div class="hero-content">
+                    <h2>Subdivision & Development Planning</h2>
+                    <p>Transform your land into profitable ventures with our comprehensive subdivision and planning services</p>
+                    <a href="#contact" class="btn btn-primary">Discuss Your Project</a>
+                </div>
+            </div>
+        </div>
+        <div class="carousel-nav">
+            <button class="carousel-prev"><i class="fas fa-chevron-left"></i></button>
+            <button class="carousel-next"><i class="fas fa-chevron-right"></i></button>
+        </div>
+        <div class="carousel-indicators">
+            <span class="indicator active" data-slide="0"></span>
+            <span class="indicator" data-slide="1"></span>
+            <span class="indicator" data-slide="2"></span>
+            <span class="indicator" data-slide="3"></span>
         </div>
     </section>
 
@@ -124,19 +163,19 @@
                         <p>Mon - Fri: 8:00 AM - 5:00 PM</p>
                     </div>
                 </div>
-                <form class="contact-form">
+                <form class="contact-form" id="contactForm">
                     <h3>Send Us a Message</h3>
                     <div class="form-group">
-                        <input type="text" placeholder="Your Name" required>
+                        <input type="text" name="name" id="contactName" placeholder="Your Name" required>
                     </div>
                     <div class="form-group">
-                        <input type="email" placeholder="Your Email" required>
+                        <input type="email" name="email" id="contactEmail" placeholder="Your Email" required>
                     </div>
                     <div class="form-group">
-                        <input type="tel" placeholder="Your Phone">
+                        <input type="tel" name="phone" id="contactPhone" placeholder="Your Phone">
                     </div>
                     <div class="form-group">
-                        <select required>
+                        <select name="service" id="contactService" required>
                             <option value="">Select Service</option>
                             <option value="land-survey">Land Surveying</option>
                             <option value="planning">Physical Planning</option>
@@ -146,9 +185,12 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <textarea placeholder="Your Message" rows="5" required></textarea>
+                        <textarea name="message" id="contactMessage" placeholder="Your Message" rows="5" required></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary">Send Message</button>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        <span class="btn-text">Send Message</span>
+                        <span class="btn-loading" style="display: none;">Sending...</span>
+                    </button>
                 </form>
             </div>
         </div>
