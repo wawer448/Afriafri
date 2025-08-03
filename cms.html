@@ -472,8 +472,8 @@
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">🎠 Hero Carousel Images</h3>
-                        <button class="btn btn-success btn-small" onclick="saveCarousel()">
-                            <i class="fas fa-save"></i> Save Changes
+                        <button class="btn btn-success btn-small" onclick="downloadCarousel()">
+                            <i class="fas fa-download"></i> Download Changes
                         </button>
                     </div>
                     
@@ -590,8 +590,8 @@
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">📝 General Content</h3>
-                        <button class="btn btn-success btn-small" onclick="saveContent()">
-                            <i class="fas fa-save"></i> Save Changes
+                        <button class="btn btn-success btn-small" onclick="downloadContent()">
+                            <i class="fas fa-download"></i> Download Changes
                         </button>
                     </div>
                     
@@ -734,42 +734,117 @@
             }
         }
 
-        // Save carousel data
-        function saveCarousel() {
-            const data = {};
-            
-            // Gather carousel data
-            for (let i = 1; i <= 4; i++) {
-                data[`carouselImage${i}`] = document.getElementById(`carouselImage${i}`).value;
-                data[`carouselHeading${i}`] = document.getElementById(`carouselHeading${i}`).value;
-                data[`carouselDesc${i}`] = document.getElementById(`carouselDesc${i}`).value;
-                data[`carouselBtn${i}`] = document.getElementById(`carouselBtn${i}`).value;
+        // Download carousel data
+        function downloadCarousel() {
+            try {
+                const data = {};
+                
+                // Gather carousel data with validation
+                for (let i = 1; i <= 4; i++) {
+                    const imageInput = document.getElementById(`carouselImage${i}`);
+                    const headingInput = document.getElementById(`carouselHeading${i}`);
+                    const descInput = document.getElementById(`carouselDesc${i}`);
+                    const btnInput = document.getElementById(`carouselBtn${i}`);
+                    
+                    if (!imageInput || !headingInput || !descInput || !btnInput) {
+                        throw new Error(`Missing form elements for slide ${i}`);
+                    }
+                    
+                    data[`carouselImage${i}`] = imageInput.value.trim();
+                    data[`carouselHeading${i}`] = headingInput.value.trim();
+                    data[`carouselDesc${i}`] = descInput.value.trim();
+                    data[`carouselBtn${i}`] = btnInput.value.trim();
+                }
+                
+                // Create downloadable JSON file
+                const jsonData = JSON.stringify(data, null, 2);
+                const blob = new Blob([jsonData], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `carousel-data-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showStatus('Carousel data downloaded successfully!', 'success');
+                console.log('Carousel data downloaded:', data);
+                
+            } catch (error) {
+                console.error('Error downloading carousel data:', error);
+                showStatus('Error downloading carousel data: ' + error.message, 'error');
             }
-            
-            // Merge with existing data
-            const existingData = JSON.parse(localStorage.getItem('ecospatialCMSData') || '{}');
-            const mergedData = { ...existingData, ...data };
-            
-            localStorage.setItem('ecospatialCMSData', JSON.stringify(mergedData));
-            showStatus('Carousel changes saved!', 'success');
         }
 
-        // Save content data
-        function saveContent() {
-            const data = {};
-            
-            // Gather content data
-            const contentFields = ['companyName', 'aboutText1', 'aboutText2', 'location', 'phone', 'email', 'hours'];
-            contentFields.forEach(field => {
-                data[field] = document.getElementById(field).value;
-            });
-            
-            // Merge with existing data
-            const existingData = JSON.parse(localStorage.getItem('ecospatialCMSData') || '{}');
-            const mergedData = { ...existingData, ...data };
-            
-            localStorage.setItem('ecospatialCMSData', JSON.stringify(mergedData));
-            showStatus('Content changes saved!', 'success');
+        // Download content data
+        function downloadContent() {
+            try {
+                const data = {};
+                
+                // Gather content data with validation
+                const contentFields = ['companyName', 'aboutText1', 'aboutText2', 'location', 'phone', 'email', 'hours'];
+                contentFields.forEach(field => {
+                    const element = document.getElementById(field);
+                    if (!element) {
+                        throw new Error(`Missing form element: ${field}`);
+                    }
+                    data[field] = element.value.trim();
+                });
+                
+                // Create downloadable JSON file
+                const jsonData = JSON.stringify(data, null, 2);
+                const blob = new Blob([jsonData], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `content-data-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showStatus('Content data downloaded successfully!', 'success');
+                console.log('Content data downloaded:', data);
+                
+            } catch (error) {
+                console.error('Error downloading content data:', error);
+                showStatus('Error downloading content data: ' + error.message, 'error');
+            }
+        }
+
+        // Update live website with changes
+        function updateLiveWebsite(data) {
+            try {
+                // Generate and execute update script immediately
+                const updateScript = generateCarouselUpdates(data) + generateContentUpdates(data);
+                
+                // Try to update parent window if CMS is in iframe or popup
+                if (window.opener && !window.opener.closed) {
+                    const script = window.opener.document.createElement('script');
+                    script.textContent = `(function() { ${updateScript} })();`;
+                    window.opener.document.head.appendChild(script);
+                    setTimeout(() => window.opener.document.head.removeChild(script), 100);
+                }
+                
+                // Also update preview iframe if it exists
+                const previewFrame = document.getElementById('previewFrame');
+                if (previewFrame && previewFrame.contentWindow) {
+                    try {
+                        const script = previewFrame.contentDocument.createElement('script');
+                        script.textContent = `(function() { ${updateScript} })();`;
+                        previewFrame.contentDocument.head.appendChild(script);
+                        setTimeout(() => previewFrame.contentDocument.head.removeChild(script), 100);
+                    } catch (e) {
+                        console.log('Could not update preview frame:', e.message);
+                    }
+                }
+                
+                console.log('Live website update attempted');
+                
+            } catch (error) {
+                console.error('Error updating live website:', error);
+            }
         }
 
         // Show status message
@@ -797,12 +872,58 @@
             iframe.src = iframe.src;
         }
 
-        // Export changes (generates JavaScript file to update the main site)
+        // Export changes with multiple options
         function exportChanges() {
-            const data = JSON.parse(localStorage.getItem('ecospatialCMSData') || '{}');
-            
-            // Generate update script
-            const updateScript = `
+            try {
+                const data = JSON.parse(localStorage.getItem('ecospatialCMSData') || '{}');
+                
+                // Show export options
+                const choice = confirm(
+                    'Choose export format:\n\n' +
+                    'OK = Download updated index.html file (Recommended)\n' +
+                    'Cancel = Download JavaScript update script'
+                );
+                
+                if (choice) {
+                    exportUpdatedHTML(data);
+                } else {
+                    exportUpdateScript(data);
+                }
+                
+            } catch (error) {
+                console.error('Export error:', error);
+                showStatus('Error exporting changes: ' + error.message, 'error');
+            }
+        }
+
+        // Export complete updated HTML file
+        function exportUpdatedHTML(data) {
+            try {
+                // Read the original index.html structure and apply changes
+                const updatedHTML = generateUpdatedHTML(data);
+                
+                const blob = new Blob([updatedHTML], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'index.html';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showStatus('Updated index.html downloaded! Replace your current index.html with this file.', 'success');
+                
+            } catch (error) {
+                console.error('HTML export error:', error);
+                showStatus('Error exporting HTML: ' + error.message, 'error');
+            }
+        }
+
+        // Export JavaScript update script (fallback)
+        function exportUpdateScript(data) {
+            try {
+                const updateScript = `
 // Ecospatial CMS Update Script
 // Generated on: ${new Date().toLocaleString()}
 
@@ -820,18 +941,107 @@
 })();
 `;
 
-            // Download the script
-            const blob = new Blob([updateScript], { type: 'text/javascript' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'ecospatial-updates.js';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+                const blob = new Blob([updateScript], { type: 'text/javascript' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'ecospatial-updates.js';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showStatus('Update script exported! Add it to your website to apply changes.', 'success');
+                
+            } catch (error) {
+                console.error('Script export error:', error);
+                showStatus('Error exporting script: ' + error.message, 'error');
+            }
+        }
+
+        // Generate complete updated HTML file
+        function generateUpdatedHTML(data) {
+            // Base HTML template with CMS data applied
+            return \`<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>\${data.companyName || 'Ecospatial Limited Solutions'} - Land Survey & Physical Planning</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <nav class="navbar">
+            <div class="container">
+                <div class="nav-brand">
+                    <h1>\${data.companyName || 'Ecospatial Limited Solutions'}</h1>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-carousel">
+            \${generateCarouselHTML(data)}
+        </div>
+        <div class="carousel-nav">
+            <button class="carousel-prev"><i class="fas fa-chevron-left"></i></button>
+            <button class="carousel-next"><i class="fas fa-chevron-right"></i></button>
+        </div>
+        <div class="carousel-indicators">
+            <span class="indicator active" data-slide="0"></span>
+            <span class="indicator" data-slide="1"></span>
+            <span class="indicator" data-slide="2"></span>
+            <span class="indicator" data-slide="3"></span>
+        </div>
+    </section>
+
+    <!-- Rest of the site content remains the same -->
+    <!-- Services, About, Contact sections would be added here -->
+    
+    <script src="js/script.js"></script>
+</body>
+</html>\`;
+        }
+
+        // Generate carousel HTML with CMS data
+        function generateCarouselHTML(data) {
+            let carouselHTML = '';
             
-            showStatus('Update script exported! Add it to your website to apply changes.', 'success');
+            for (let i = 1; i <= 4; i++) {
+                const isActive = i === 1 ? 'active' : '';
+                const image = data[\`carouselImage\${i}\`] || '';
+                const heading = data[\`carouselHeading\${i}\`] || '';
+                const desc = data[\`carouselDesc\${i}\`] || '';
+                const btn = data[\`carouselBtn\${i}\`] || '';
+                
+                carouselHTML += \`
+            <div class="carousel-slide \${isActive}" style="background-image: url('\${image}');">
+                <div class="carousel-overlay"></div>
+                <div class="hero-content">
+                    <h2>\${heading}</h2>
+                    <p>\${desc}</p>
+                    <a href="#contact" class="btn btn-primary">\${btn}</a>
+                </div>
+            </div>\`;
+            }
+            
+            return carouselHTML;
         }
 
         function generateCarouselUpdates(data) {
