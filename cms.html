@@ -875,7 +875,30 @@
         // Export changes with multiple options
         function exportChanges() {
             try {
-                const data = JSON.parse(localStorage.getItem('ecospatialCMSData') || '{}');
+                // Gather all current form data instead of relying on localStorage
+                const data = {};
+                
+                // Gather carousel data
+                for (let i = 1; i <= 4; i++) {
+                    const imageInput = document.getElementById(`carouselImage${i}`);
+                    const headingInput = document.getElementById(`carouselHeading${i}`);
+                    const descInput = document.getElementById(`carouselDesc${i}`);
+                    const btnInput = document.getElementById(`carouselBtn${i}`);
+                    
+                    if (imageInput) data[`carouselImage${i}`] = imageInput.value.trim();
+                    if (headingInput) data[`carouselHeading${i}`] = headingInput.value.trim();
+                    if (descInput) data[`carouselDesc${i}`] = descInput.value.trim();
+                    if (btnInput) data[`carouselBtn${i}`] = btnInput.value.trim();
+                }
+                
+                // Gather content data
+                const contentFields = ['companyName', 'aboutText1', 'aboutText2', 'location', 'phone', 'email', 'hours'];
+                contentFields.forEach(field => {
+                    const element = document.getElementById(field);
+                    if (element) {
+                        data[field] = element.value.trim();
+                    }
+                });
                 
                 // Show export options
                 const choice = confirm(
@@ -899,7 +922,7 @@
         // Export complete updated HTML file
         function exportUpdatedHTML(data) {
             try {
-                // Read the original index.html structure and apply changes
+                // Generate the complete HTML with all changes applied
                 const updatedHTML = generateUpdatedHTML(data);
                 
                 const blob = new Blob([updatedHTML], { type: 'text/html' });
@@ -961,87 +984,284 @@
 
         // Generate complete updated HTML file
         function generateUpdatedHTML(data) {
-            // Base HTML template with CMS data applied
-            return \`<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>\${data.companyName || 'Ecospatial Limited Solutions'} - Land Survey & Physical Planning</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body>
-    <!-- Header Section -->
-    <header>
-        <nav class="navbar">
-            <div class="container">
-                <div class="nav-brand">
-                    <h1>\${data.companyName || 'Ecospatial Limited Solutions'}</h1>
-                </div>
-                <ul class="nav-menu">
-                    <li><a href="#home">Home</a></li>
-                    <li><a href="#services">Services</a></li>
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                </ul>
-                <div class="hamburger">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-            </div>
-        </nav>
-    </header>
-
-    <!-- Hero Section -->
-    <section id="home" class="hero">
-        <div class="hero-carousel">
-            \${generateCarouselHTML(data)}
-        </div>
-        <div class="carousel-nav">
-            <button class="carousel-prev"><i class="fas fa-chevron-left"></i></button>
-            <button class="carousel-next"><i class="fas fa-chevron-right"></i></button>
-        </div>
-        <div class="carousel-indicators">
-            <span class="indicator active" data-slide="0"></span>
-            <span class="indicator" data-slide="1"></span>
-            <span class="indicator" data-slide="2"></span>
-            <span class="indicator" data-slide="3"></span>
-        </div>
-    </section>
-
-    <!-- Rest of the site content remains the same -->
-    <!-- Services, About, Contact sections would be added here -->
-    
-    <script src="js/script.js"></script>
-</body>
-</html>\`;
-        }
-
-        // Generate carousel HTML with CMS data
-        function generateCarouselHTML(data) {
-            let carouselHTML = '';
+            // Get current data or use defaults
+            const companyName = data.companyName || 'Ecospatial Limited Solutions';
+            const aboutText1 = data.aboutText1 || 'Ecospatial Limited Solutions is a leading land survey and physical planning consultancy firm dedicated to providing innovative spatial solutions. With years of experience in the industry, we combine cutting-edge technology with professional expertise to deliver accurate and reliable services.';
+            const aboutText2 = data.aboutText2 || 'Our team of qualified surveyors and planners is committed to excellence, ensuring that every project meets the highest standards of quality and precision. We pride ourselves on our attention to detail and our ability to provide customized solutions that meet our clients\' unique needs.';
+            const location = data.location || 'Nairobi, Kenya';
+            const phone = data.phone || '+254 722 804 316';
+            const email = data.email || 'pwaweru05@gmail.com';
+            const hours = data.hours || 'Mon - Fri: 8:00 AM - 5:00 PM';
             
-            for (let i = 1; i <= 4; i++) {
-                const isActive = i === 1 ? 'active' : '';
-                const image = data[\`carouselImage\${i}\`] || '';
-                const heading = data[\`carouselHeading\${i}\`] || '';
-                const desc = data[\`carouselDesc\${i}\`] || '';
-                const btn = data[\`carouselBtn\${i}\`] || '';
-                
-                carouselHTML += \`
-            <div class="carousel-slide \${isActive}" style="background-image: url('\${image}');">
-                <div class="carousel-overlay"></div>
-                <div class="hero-content">
-                    <h2>\${heading}</h2>
-                    <p>\${desc}</p>
-                    <a href="#contact" class="btn btn-primary">\${btn}</a>
-                </div>
-            </div>\`;
-            }
+            // Generate carousel slides
+            const slide1 = {
+                image: data.carouselImage1 || 'https://images.unsplash.com/photo-1489392191049-fc10c97e64b6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+                heading: data.carouselHeading1 || 'Secure Your Land Investment Today',
+                desc: data.carouselDesc1 || 'Professional land surveying services to protect your property rights and maximize your investment value',
+                btn: data.carouselBtn1 || 'Get Free Consultation'
+            };
             
-            return carouselHTML;
+            const slide2 = {
+                image: data.carouselImage2 || 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+                heading: data.carouselHeading2 || 'Fast & Accurate Title Deed Processing',
+                desc: data.carouselDesc2 || 'Get your land documentation completed in record time with our expert surveying and legal support',
+                btn: data.carouselBtn2 || 'Start Your Survey'
+            };
+            
+            const slide3 = {
+                image: data.carouselImage3 || 'https://images.unsplash.com/photo-1569163139394-de4798a9c2b6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+                heading: data.carouselHeading3 || 'Trusted by 500+ Property Owners',
+                desc: data.carouselDesc3 || 'Join hundreds of satisfied clients who have secured their land investments with our certified survey services',
+                btn: data.carouselBtn3 || 'Book Appointment'
+            };
+            
+            const slide4 = {
+                image: data.carouselImage4 || 'https://images.unsplash.com/photo-1611348524140-53c9914707fc?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+                heading: data.carouselHeading4 || 'Subdivision & Development Planning',
+                desc: data.carouselDesc4 || 'Transform your land into profitable ventures with our comprehensive subdivision and planning services',
+                btn: data.carouselBtn4 || 'Discuss Your Project'
+            };
+
+            return '<!DOCTYPE html>' +
+'<html lang="en">' +
+'<head>' +
+'    <meta charset="UTF-8">' +
+'    <meta name="viewport" content="width=device-width, initial-scale=1.0">' +
+'    <title>' + companyName + ' - Land Survey & Physical Planning</title>' +
+'    <link rel="stylesheet" href="css/styles.css">' +
+'    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">' +
+'</head>' +
+'<body>' +
+'    <!-- Header Section -->' +
+'    <header>' +
+'        <nav class="navbar">' +
+'            <div class="container">' +
+'                <div class="nav-brand">' +
+'                    <h1>' + companyName + '</h1>' +
+'                </div>' +
+'                <ul class="nav-menu">' +
+'                    <li><a href="#home">Home</a></li>' +
+'                    <li><a href="#services">Services</a></li>' +
+'                    <li><a href="#about">About</a></li>' +
+'                    <li><a href="#contact">Contact</a></li>' +
+'                </ul>' +
+'                <div class="hamburger">' +
+'                    <span></span>' +
+'                    <span></span>' +
+'                    <span></span>' +
+'                </div>' +
+'            </div>' +
+'        </nav>' +
+'    </header>' +
+
+'    <!-- Hero Section -->' +
+'    <section id="home" class="hero">' +
+'        <div class="hero-carousel">' +
+'            <div class="carousel-slide active" style="background-image: url(\'' + slide1.image + '\');">' +
+'                <div class="carousel-overlay"></div>' +
+'                <div class="hero-content">' +
+'                    <h2>' + slide1.heading + '</h2>' +
+'                    <p>' + slide1.desc + '</p>' +
+'                    <a href="#contact" class="btn btn-primary">' + slide1.btn + '</a>' +
+'                </div>' +
+'            </div>' +
+'            <div class="carousel-slide" style="background-image: url(\'' + slide2.image + '\');">' +
+'                <div class="carousel-overlay"></div>' +
+'                <div class="hero-content">' +
+'                    <h2>' + slide2.heading + '</h2>' +
+'                    <p>' + slide2.desc + '</p>' +
+'                    <a href="#contact" class="btn btn-primary">' + slide2.btn + '</a>' +
+'                </div>' +
+'            </div>' +
+'            <div class="carousel-slide" style="background-image: url(\'' + slide3.image + '\');">' +
+'                <div class="carousel-overlay"></div>' +
+'                <div class="hero-content">' +
+'                    <h2>' + slide3.heading + '</h2>' +
+'                    <p>' + slide3.desc + '</p>' +
+'                    <a href="#contact" class="btn btn-primary">' + slide3.btn + '</a>' +
+'                </div>' +
+'            </div>' +
+'            <div class="carousel-slide" style="background-image: url(\'' + slide4.image + '\');">' +
+'                <div class="carousel-overlay"></div>' +
+'                <div class="hero-content">' +
+'                    <h2>' + slide4.heading + '</h2>' +
+'                    <p>' + slide4.desc + '</p>' +
+'                    <a href="#contact" class="btn btn-primary">' + slide4.btn + '</a>' +
+'                </div>' +
+'            </div>' +
+'        </div>' +
+'        <div class="carousel-nav">' +
+'            <button class="carousel-prev"><i class="fas fa-chevron-left"></i></button>' +
+'            <button class="carousel-next"><i class="fas fa-chevron-right"></i></button>' +
+'        </div>' +
+'        <div class="carousel-indicators">' +
+'            <span class="indicator active" data-slide="0"></span>' +
+'            <span class="indicator" data-slide="1"></span>' +
+'            <span class="indicator" data-slide="2"></span>' +
+'            <span class="indicator" data-slide="3"></span>' +
+'        </div>' +
+'    </section>' +
+
+'    <!-- Services Section -->' +
+'    <section id="services" class="services">' +
+'        <div class="container">' +
+'            <h2 class="section-title">Our Services</h2>' +
+'            <div class="services-grid">' +
+'                <div class="service-card">' +
+'                    <i class="fas fa-map-marked-alt"></i>' +
+'                    <h3>Land Surveying</h3>' +
+'                    <p>Accurate topographical surveys, boundary surveys, and cadastral mapping using state-of-the-art equipment.</p>' +
+'                </div>' +
+'                <div class="service-card">' +
+'                    <i class="fas fa-city"></i>' +
+'                    <h3>Physical Planning</h3>' +
+'                    <p>Comprehensive urban and regional planning services for sustainable development projects.</p>' +
+'                </div>' +
+'                <div class="service-card">' +
+'                    <i class="fas fa-globe-africa"></i>' +
+'                    <h3>GIS Mapping</h3>' +
+'                    <p>Geographic Information System solutions for spatial data analysis and visualization.</p>' +
+'                </div>' +
+'                <div class="service-card">' +
+'                    <i class="fas fa-home"></i>' +
+'                    <h3>Property Subdivision</h3>' +
+'                    <p>Expert subdivision planning and approval processing for residential and commercial properties.</p>' +
+'                </div>' +
+'                <div class="service-card">' +
+'                    <i class="fas fa-file-alt"></i>' +
+'                    <h3>Land Documentation</h3>' +
+'                    <p>Complete land documentation services including title deeds and land registration.</p>' +
+'                </div>' +
+'            </div>' +
+'        </div>' +
+'    </section>' +
+
+'    <!-- About Section -->' +
+'    <section id="about" class="about">' +
+'        <div class="container">' +
+'            <h2 class="section-title">About ' + companyName + '</h2>' +
+'            <div class="about-content">' +
+'                <div class="about-text">' +
+'                    <p>' + aboutText1 + '</p>' +
+'                    <p>' + aboutText2 + '</p>' +
+'                    <div class="stats">' +
+'                        <div class="stat">' +
+'                            <h3>500+</h3>' +
+'                            <p>Projects Completed</p>' +
+'                        </div>' +
+'                        <div class="stat">' +
+'                            <h3>15+</h3>' +
+'                            <p>Years Experience</p>' +
+'                        </div>' +
+'                        <div class="stat">' +
+'                            <h3>100%</h3>' +
+'                            <p>Client Satisfaction</p>' +
+'                        </div>' +
+'                    </div>' +
+'                </div>' +
+'            </div>' +
+'        </div>' +
+'    </section>' +
+
+'    <!-- Contact Section -->' +
+'    <section id="contact" class="contact">' +
+'        <div class="container">' +
+'            <h2 class="section-title">Get In Touch</h2>' +
+'            <div class="contact-content">' +
+'                <div class="contact-info">' +
+'                    <h3>Contact Information</h3>' +
+'                    <div class="info-item">' +
+'                        <i class="fas fa-map-marker-alt"></i>' +
+'                        <p>' + location + '</p>' +
+'                    </div>' +
+'                    <div class="info-item">' +
+'                        <i class="fas fa-phone"></i>' +
+'                        <p>' + phone + '</p>' +
+'                    </div>' +
+'                    <div class="info-item">' +
+'                        <i class="fas fa-envelope"></i>' +
+'                        <p>' + email + '</p>' +
+'                    </div>' +
+'                    <div class="info-item">' +
+'                        <i class="fas fa-clock"></i>' +
+'                        <p>' + hours + '</p>' +
+'                    </div>' +
+'                </div>' +
+'                <form class="contact-form" id="contactForm">' +
+'                    <h3>Send Us a Message</h3>' +
+'                    <div class="form-group">' +
+'                        <input type="text" name="name" id="contactName" placeholder="Your Name" required>' +
+'                    </div>' +
+'                    <div class="form-group">' +
+'                        <input type="email" name="email" id="contactEmail" placeholder="Your Email" required>' +
+'                    </div>' +
+'                    <div class="form-group">' +
+'                        <input type="tel" name="phone" id="contactPhone" placeholder="Your Phone">' +
+'                    </div>' +
+'                    <div class="form-group">' +
+'                        <select name="service" id="contactService" required>' +
+'                            <option value="">Select Service</option>' +
+'                            <option value="land-survey">Land Surveying</option>' +
+'                            <option value="planning">Physical Planning</option>' +
+'                            <option value="gis">GIS Mapping</option>' +
+'                            <option value="subdivision">Property Subdivision</option>' +
+'                            <option value="documentation">Land Documentation</option>' +
+'                        </select>' +
+'                    </div>' +
+'                    <div class="form-group">' +
+'                        <textarea name="message" id="contactMessage" placeholder="Your Message" rows="5" required></textarea>' +
+'                    </div>' +
+'                    <button type="submit" class="btn btn-primary" id="submitBtn">' +
+'                        <span class="btn-text">Send Message</span>' +
+'                        <span class="btn-loading" style="display: none;">Sending...</span>' +
+'                    </button>' +
+'                </form>' +
+'            </div>' +
+'        </div>' +
+'    </section>' +
+
+'    <!-- Footer -->' +
+'    <footer>' +
+'        <div class="container">' +
+'            <div class="footer-content">' +
+'                <div class="footer-section">' +
+'                    <h4>' + companyName + '</h4>' +
+'                    <p>Your trusted partner in land survey and physical planning services.</p>' +
+'                    <div class="social-links">' +
+'                        <a href="#"><i class="fab fa-facebook"></i></a>' +
+'                        <a href="#"><i class="fab fa-twitter"></i></a>' +
+'                        <a href="#"><i class="fab fa-linkedin"></i></a>' +
+'                        <a href="#"><i class="fab fa-instagram"></i></a>' +
+'                    </div>' +
+'                </div>' +
+'                <div class="footer-section">' +
+'                    <h4>Quick Links</h4>' +
+'                    <ul>' +
+'                        <li><a href="#home">Home</a></li>' +
+'                        <li><a href="#services">Services</a></li>' +
+'                        <li><a href="#about">About Us</a></li>' +
+'                        <li><a href="#contact">Contact</a></li>' +
+'                    </ul>' +
+'                </div>' +
+'                <div class="footer-section">' +
+'                    <h4>Our Services</h4>' +
+'                    <ul>' +
+'                        <li><a href="#services">Land Surveying</a></li>' +
+'                        <li><a href="#services">Physical Planning</a></li>' +
+'                        <li><a href="#services">GIS Mapping</a></li>' +
+'                        <li><a href="#services">Property Subdivision</a></li>' +
+'                    </ul>' +
+'                </div>' +
+'            </div>' +
+'            <div class="footer-bottom">' +
+'                <p>&copy; 2024 ' + companyName + '. All rights reserved.</p>' +
+'            </div>' +
+'        </div>' +
+'    </footer>' +
+
+'    <script src="js/script.js"></script>' +
+'</body>' +
+'</html>';
         }
 
         function generateCarouselUpdates(data) {
